@@ -1,0 +1,296 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>티스토리 실습 프롬프트</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@700&family=Noto+Sans+KR:wght@400;500;700&display=swap">
+<style>
+html,body{margin:0}
+[hidden]{display:none!important}
+img{max-width:100%}
+/* Layout: 한 줄 세로 흐름, 교시별 묶음 → 실습 카드마다 복사 가능한 요청문 상자 */
+:root {
+  --bg: #f3f3ef;
+  --surface: #ffffff;
+  --sage: #e2e2d8;
+  --fg: #363636;
+  --muted: #6b6b66;
+  --green: #508172;
+  --green-ink: #ffffff;
+  --line: #d6d6cc;
+  --prompt-bg: #f7f7f2;
+  --display: "Gowun Batang", "Noto Serif KR", serif;
+  --body: "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #1c1f1d; --surface: #252927; --sage: #2f3532; --fg: #e8e8e2; --muted: #a3a8a2;
+    --green: #7fb3a3; --green-ink: #10201b; --line: #3a413d; --prompt-bg: #1f2321; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #1c1f1d; --surface: #252927; --sage: #2f3532; --fg: #e8e8e2; --muted: #a3a8a2;
+  --green: #7fb3a3; --green-ink: #10201b; --line: #3a413d; --prompt-bg: #1f2321; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); font-family: var(--body); font-size: 16px; line-height: 1.7; }
+.wrap { max-width: 860px; margin: 0 auto; padding-inline: 20px; padding-block: 32px 64px; }
+.dots { display: flex; gap: 6px; margin-bottom: 18px; }
+.dots i { width: 10px; height: 10px; border-radius: 50%; display: block; }
+.dots i:nth-child(1) { background: #508172; } .dots i:nth-child(2) { background: #babaa9; }
+.dots i:nth-child(3) { background: #d9a86c; } .dots i:nth-child(4) { background: #c97b63; }
+.eyebrow { font-size: 13px; letter-spacing: .08em; color: var(--green); font-weight: 700; }
+h1 { font-family: var(--display); font-size: clamp(28px, 6vw, 40px); line-height: 1.25; margin: 6px 0 10px; text-wrap: balance; }
+.lead { color: var(--muted); margin: 0 0 22px; max-width: 62ch; }
+nav { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 36px; }
+nav a { font-size: 14px; color: var(--fg); text-decoration: none; border: 1px solid var(--line); background: var(--surface); padding: 6px 12px; border-radius: 999px; }
+nav a:hover, nav a:focus-visible { border-color: var(--green); color: var(--green); outline: none; }
+.period { margin-top: 40px; }
+.period h2 { font-family: var(--display); font-size: 24px; margin: 0 0 4px; }
+.period > p { color: var(--muted); margin: 0 0 16px; font-size: 15px; }
+.cards { display: grid; gap: 16px; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 20px; min-width: 0; scroll-margin-top: 16px; }
+.card-head { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.tag { background: var(--green); color: var(--green-ink); font-size: 13px; font-weight: 700; padding: 3px 10px; border-radius: 999px; white-space: nowrap; }
+.card h3 { font-size: 19px; margin: 0; line-height: 1.4; }
+.when { color: var(--muted); font-size: 15px; margin: 8px 0 12px; }
+.prompt { position: relative; background: var(--prompt-bg); border: 1px solid var(--line); border-radius: 10px; }
+.prompt pre { margin: 0; padding: 16px 16px 16px; white-space: pre-wrap; word-break: keep-all; overflow-wrap: anywhere; font-family: var(--body); font-size: 15.5px; line-height: 1.75; color: var(--fg); max-height: 420px; overflow: auto; }
+.prompt .bar { display: flex; justify-content: flex-end; padding: 8px 10px; border-top: 1px solid var(--line); }
+button.copy { font-family: var(--body); font-size: 14px; font-weight: 700; background: var(--green); color: var(--green-ink); border: 0; border-radius: 8px; padding: 8px 16px; cursor: pointer; min-height: 40px; }
+button.copy:focus-visible { outline: 3px solid var(--fg); outline-offset: 2px; }
+button.copy.done { background: var(--sage); color: var(--fg); }
+.tip { margin: 12px 0 0; font-size: 15px; padding-left: 14px; border-left: 3px solid var(--sage); }
+.tip b { color: var(--green); }
+footer { margin-top: 48px; color: var(--muted); font-size: 13px; }
+
+/* 잠금 화면 */
+.gate { min-height: 70vh; display: grid; place-items: center; padding-inline: 20px; }
+.gate form { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 28px 24px; width: 100%; max-width: 360px; display: grid; gap: 12px; }
+.gate h2 { font-family: var(--display); font-size: 24px; margin: 0; }
+.gate p { margin: 0; color: var(--muted); font-size: 15px; }
+.gate input { font: inherit; font-size: 20px; letter-spacing: .3em; text-align: center; padding: 10px; border: 1px solid var(--line); border-radius: 10px; background: var(--bg); color: var(--fg); }
+.gate input:focus { outline: 3px solid var(--green); outline-offset: 1px; }
+.gate button { font: inherit; font-weight: 700; background: var(--green); color: var(--green-ink); border: 0; border-radius: 10px; padding: 12px; cursor: pointer; }
+.gate .err { color: #b4543f; font-size: 14px; min-height: 1.2em; }
+@media (prefers-reduced-motion: no-preference) { button.copy { transition: background .15s; } }
+</style>
+</head>
+<body>
+<section class="gate" id="gate">
+  <form id="gate-form" autocomplete="off">
+    <div class="dots" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <h2>티스토리 실습 프롬프트</h2>
+    <p>강의 때 안내받은 비밀번호를 입력하세요.</p>
+    <label for="pw" class="sr" style="position:absolute;left:-9999px">비밀번호</label>
+    <input id="pw" type="password" inputmode="numeric" maxlength="8" placeholder="····">
+    <button type="submit">열기</button>
+    <div class="err" id="err" role="alert"></div>
+  </form>
+</section>
+
+<main class="wrap" id="content" hidden>
+  <div class="dots" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+  <div class="eyebrow">부업 블로그+티스토리 체험단 과정 · 2회차 · 강사 정경</div>
+  <h1>티스토리 실습 프롬프트</h1>
+  <p class="lead">수업에서 쓰는 요청문 모음입니다. [복사]를 누르고 AI 대화창에 붙여넣은 뒤, ( ) 빈칸만 내 내용으로 채우면 됩니다.</p>
+
+  <nav aria-label="바로가기">
+    <a href="#p1">1 블로그 설계</a>
+    <a href="#p2">2 카테고리</a>
+    <a href="#p3">3 소개 페이지</a>
+    <a href="#p4">4 글쓰기 스킬</a>
+    <a href="#p5">5 첫 글</a>
+    <a href="#p6">지침 고치기</a>
+    <a href="#p7">7 블로그 스키마</a>
+  </nav>
+
+  <section class="period">
+    <h2>1교시 · 블로그 만들기</h2>
+    <p>개설 전에 이름·주소·닉네임을 정하고, 카테고리까지 만듭니다.</p>
+    <div class="cards">
+      <article class="card" id="p1">
+        <div class="card-head"><span class="tag">실습 1</span><h3>개설 화면 3칸에 뭘 넣을까</h3></div>
+        <p class="when">블로그를 개설하기 전에 씁니다. 주소는 개설 후 바꿀 수 없습니다.</p>
+        <div class="prompt"><pre>티스토리 블로그를 개설할 거야. 개설 화면의 블로그 이름·주소·닉네임을 3개씩 추천해 줘.
+티스토리는 이웃이 아니라 검색으로 처음 온 사람이 읽는 블로그야. 아래 기준을 지켜 줘.
+- 블로그 이름: 처음 본 사람도 주제를 알 수 있게 (감성형 이름 X)
+- 주소: 영문 소문자·숫자·하이픈 4~32자, 짧고 읽기 쉽게
+- 닉네임: 실제 경험한 사람이라는 느낌이 나게
+- 블로그 하나에 주제 하나
+
+내가 만들고 싶은 티스토리: (                    )
+소개문 2문장도 제안해 줘.</pre><div class="bar"><button class="copy" type="button">복사</button></div></div>
+        <p class="tip"><b>설계표에 적기:</b> 이름, 주소 후보 3개, 닉네임, 소개문 2문장</p>
+      </article>
+
+      <article class="card" id="p2">
+        <div class="card-head"><span class="tag">실습 2</span><h3>AI에게 인터뷰 받고 카테고리 정하기</h3></div>
+        <p class="when">무슨 글을 쓸지 모를 때 씁니다. 실습 1 대화창에 이어서 붙여넣으면 질문이 줄어듭니다.</p>
+        <div class="prompt"><pre>나는 티스토리 블로그를 처음 시작하는데, 무슨 글을 써야 할지 모르겠어.
+나에게 질문을 하나씩 해서 내 생활을 파악한 다음, 블로그 카테고리 3개를 추천해 줘.
+
+- 질문은 한 번에 하나씩, 5개 이내로
+- 쉬운 말로, 내가 짧게 대답할 수 있게
+- 다 묻고 나면 카테고리 3개와 카테고리마다 글 제목 예시 3개를 알려 줘
+- 티스토리는 검색으로 들어오는 블로그라서 카테고리 이름은 사람들이 검색하는 말처럼 구체적으로 지어 줘</pre><div class="bar"><button class="copy" type="button">복사</button></div></div>
+        <p class="tip"><b>만드는 곳:</b> 블로그 관리 → 콘텐츠 → 카테고리 관리 → [+ 카테고리 추가] → [변경사항 저장]</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="period">
+    <h2>2교시 · 소개 페이지와 글쓰기 스킬</h2>
+    <p>소개는 카테고리가 아니라 페이지로 만들고, 매번 쓸 글쓰기 스킬을 저장합니다.</p>
+    <div class="cards">
+      <article class="card" id="p3">
+        <div class="card-head"><span class="tag">실습 3</span><h3>소개 페이지 HTML 쓰기</h3></div>
+        <p class="when">결과 코드는 블로그 관리 → 콘텐츠 → 페이지 관리 → 새 페이지에서 HTML 모드로 바꾼 뒤 붙여넣습니다.</p>
+        <div class="prompt"><pre>티스토리 "페이지"에 올릴 블로그 소개 글을 HTML로 써 줘.
+블로그 이름: (        )
+운영자(닉네임): (        )
+다루는 주제: (        )
+주요 독자: (        )
+연락 방법: (        )
+구성: 이 블로그는 / 운영자 소개 / 다루는 글(카테고리) / 문의
+
+- h2, p, ul만 쓰고 h1은 쓰지 마.
+- 맨 아래에 AboutPage 스키마(JSON-LD)를 &lt;script type="application/ld+json"&gt; 태그로 넣어 줘.
+- 내가 준 정보만 쓰고, 없는 정보는 넣지 마.
+- 코드 블록 하나로 코드만 출력해 줘.</pre><div class="bar"><button class="copy" type="button">복사</button></div></div>
+        <p class="tip"><b>맨 아래 script 부분은</b> 검색엔진이 읽는 명함이라 화면에는 보이지 않습니다.</p>
+      </article>
+
+      <article class="card" id="p4">
+        <div class="card-head"><span class="tag">실습 4</span><h3>티스토리 글쓰기 스킬 지침</h3></div>
+        <p class="when">AI의 재사용 기능(프로젝트·Gem 등)에 저장합니다. 맨 위 3칸은 설계표 내용으로 채웁니다.</p>
+        <div class="prompt"><pre>[역할]
+너는 티스토리 블로그 전용 HTML 글 작성 도우미다.
+네이버 블로그 스타일이 아니라 구글 검색에 맞는 티스토리 스타일로 쓴다.
+블로그 이름: (     )   주제: (     )   지역: (     )
+
+[내가 입력할 정보]
+- 글 종류: 체험단 후기 / 내돈내산 후기 / 정보 글
+- 주제와 핵심 키워드
+- 대상 독자
+- 실제 경험 메모 (방문일, 가격, 좋았던 점, 아쉬운 점)
+- 사진 설명 (사진1: 외관, 사진2: 메뉴 …)
+- 협찬·제휴 여부
+- 참고할 공식 링크 (있으면)
+
+[글 작성 규칙]
+1. 핵심 정보가 부족하면 글을 쓰기 전에 먼저 질문한다.
+2. 협찬·무상 제공·제휴 링크가 있으면 첫 문단 맨 앞에 경제적 이해관계 문구를 넣는다.
+   예: "이 글은 ○○로부터 제품을 무상으로 제공받아 작성했습니다."
+3. 첫 문단에 결론과 요약을 2~3문장으로 쓴다.
+4. 소제목은 h2, 세부 항목은 h3을 쓴다. h1은 쓰지 않는다. (제목은 제목 입력란에 따로 넣는다)
+5. 문단은 3~4문장으로 묶는다. 한 줄마다 줄바꿈하지 않는다.
+6. 가운데 정렬, 이모티콘, 과한 감탄사를 쓰지 않는다.
+7. 가격·운영시간·주차처럼 비교할 정보가 있을 때만 표를 쓴다. 모든 글에 표나 FAQ를 억지로 넣지 않는다.
+8. 장단점은 목록으로 정리한다.
+9. 마지막에 "이런 분께 추천" 문단을 넣는다.
+10. 내가 주지 않은 경험·가격·수치·사례·링크는 지어내지 않는다. 빈 정보는 [확인 필요]로 표시한다.
+11. 건강·효능 관련 표현은 과장하지 않는다.
+
+[HTML 규칙]
+- 사용 태그: h2, h3, p, ul, li, strong, a, 필요할 때만 table
+- html, head, body, script, style 태그와 외부 CSS는 쓰지 않는다.
+- 사진 자리는 눈에 보이게 아래처럼 표시한다.
+  &lt;p style="background:#f3f3f3;padding:12px;"&gt;[사진1: 외관 사진 넣는 자리]&lt;/p&gt;
+- 가짜 이미지 주소를 만들지 않는다.
+- 표는 3열 이내로 해서 모바일에서 잘리지 않게 한다.
+
+[출력 순서]
+1. 제목 후보 3개
+2. HTML 본문 (코드 블록 하나로)
+3. 검색 설명문 1개 (120자 이내)
+4. 태그 10개
+5. 발행 전 검수 메모 (확인 필요 항목, 검증 안 된 주장)</pre><div class="bar"><button class="copy" type="button">복사</button></div></div>
+      </article>
+    </div>
+  </section>
+
+  <section class="period">
+    <h2>3교시 · 첫 글 발행과 블로그 스키마</h2>
+    <p>저장한 스킬로 첫 글을 쓰고, 스킨에 블로그 전체용 스키마를 넣습니다.</p>
+    <div class="cards">
+      <article class="card" id="p5">
+        <div class="card-head"><span class="tag">실습 5</span><h3>스킬에 첫 글 요청하기</h3></div>
+        <p class="when">실습 4에서 저장한 스킬을 불러온 대화창에 붙여넣고 빈칸을 채웁니다.</p>
+        <div class="prompt"><pre>글 종류: (체험단 후기 / 내돈내산 후기 / 정보 글 중 하나)
+주제와 핵심 키워드: (        )
+대상 독자: (        )
+경험 메모: 방문일(    ), 가격(    ), 좋았던 점(    ), 아쉬운 점(    )
+사진 설명: 사진1(    ), 사진2(    ), 사진3(    )
+협찬·제휴 여부: 있음 / 없음  (있으면 제공처:     )
+참고할 공식 링크: (        )</pre><div class="bar"><button class="copy" type="button">복사</button></div></div>
+        <p class="tip"><b>발행 전:</b> 협찬 문구가 첫 줄에 있는지, 내가 말하지 않은 내용이 들어갔는지 확인하고 AI 문장 3곳 이상을 내 말투로 고칩니다.</p>
+      </article>
+
+      <article class="card" id="p6">
+        <div class="card-head"><span class="tag">실습 5</span><h3>결과가 마음에 안 들 때: 지침 고치기</h3></div>
+        <p class="when">같은 문제가 반복되지 않도록 스킬 지침에 규칙을 한 줄 추가합니다.</p>
+        <div class="prompt"><pre>방금 쓴 글에서 이 부분이 마음에 안 들어: (        )
+다음부터 이런 일이 없도록 스킬 지침 [글 작성 규칙]에 추가할 규칙을 한 줄로 만들어 줘.</pre><div class="bar"><button class="copy" type="button">복사</button></div></div>
+      </article>
+
+      <article class="card" id="p7">
+        <div class="card-head"><span class="tag">실습 7</span><h3>블로그 전체용 스키마 만들기</h3></div>
+        <p class="when">결과 코드는 블로그 관리 → 꾸미기 → 스킨 편집 → [html 편집]에서 &lt;/head&gt; 바로 위 줄에 붙여넣고 [적용]합니다. 먼저 전체 코드를 메모장에 백업하세요.</p>
+        <div class="prompt"><pre>내 티스토리 블로그용 JSON-LD 스키마를 만들어 줘.
+종류: WebSite + Person
+블로그 이름: (        )
+주소: https://(        ).tistory.com
+운영자 이름: (        )
+블로그 소개: (        )
+내가 준 정보만 쓰고, 없는 정보는 넣지 마.
+&lt;script type="application/ld+json"&gt; 태그까지 포함해서 코드만 출력해 줘.</pre><div class="bar"><button class="copy" type="button">복사</button></div></div>
+        <p class="tip"><b>확인:</b> 구글 「리치 결과 테스트」(search.google.com/test/rich-results)에 내 블로그 주소를 넣어 봅니다.</p>
+      </article>
+    </div>
+  </section>
+
+  <footer>강사 정경 · 수업 중 실습용 자료입니다.</footer>
+</main>
+
+<script>
+(function () {
+  var KEY = 'tp-unlocked';
+  var gate = document.getElementById('gate');
+  var content = document.getElementById('content');
+  function open() { gate.hidden = true; content.hidden = false; }
+  try { if (sessionStorage.getItem(KEY) === '1') open(); } catch (e) {}
+  document.getElementById('gate-form').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var v = document.getElementById('pw').value.trim();
+    if (v === '1014') {
+      try { sessionStorage.setItem(KEY, '1'); } catch (err) {}
+      open();
+    } else {
+      document.getElementById('err').textContent = '비밀번호가 맞지 않습니다. 다시 입력하세요.';
+    }
+  });
+  document.querySelectorAll('button.copy').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var pre = btn.closest('.prompt').querySelector('pre');
+      var text = pre.innerText;
+      function ok() { btn.textContent = '복사됨'; btn.classList.add('done'); setTimeout(function () { btn.textContent = '복사'; btn.classList.remove('done'); }, 1800); }
+      function fallback() {
+        var r = document.createRange(); r.selectNodeContents(pre);
+        var sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(r);
+        btn.textContent = '선택됨 · Ctrl+C';
+      }
+      try {
+        navigator.clipboard.writeText(text).then(ok, fallback);
+      } catch (e) { fallback(); }
+    });
+  });
+})();
+</script>
+</body>
+</html>
