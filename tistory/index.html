@@ -105,6 +105,7 @@ footer { margin-top: 48px; color: var(--muted); font-size: 13px; }
     <a href="#p2">2 카테고리</a>
     <a href="#p3">3 소개 페이지</a>
     <a href="#p4">4 글쓰기 스킬</a>
+    <a href="#p4b">네이버→티스토리 변환</a>
     <a href="#p5">5 첫 글</a>
     <a href="#p6">지침 고치기</a>
     <a href="#p7">7 블로그 스키마</a>
@@ -241,6 +242,47 @@ footer { margin-top: 48px; color: var(--muted); font-size: 13px; }
 &lt;script type="application/ld+json"&gt; 태그로 넣는다.
 글 주소·발행일·대표 이미지 주소는 지어내지 말고 [발행 후 입력]으로 비워 둔다.</pre><div class="bar"><button class="copy" type="button">복사</button></div></div>
       </article>
+      <article class="card" id="p4b">
+        <div class="card-head"><span class="tag">추가 스킬</span><h3>네이버 글 → 티스토리 HTML 변환 스킬</h3></div>
+        <p class="when">이미 네이버에 올린 글을 티스토리용으로 다시 쓸 때 씁니다. AI의 스킬(또는 프로젝트·Gem) 지침에 저장한 뒤, 네이버 원고를 붙여넣고 "티스토리용으로 바꿔 줘"라고 요청합니다.</p>
+        <div class="prompt"><pre>---
+name: naver-to-tistory-converter
+description: 네이버 블로그 스타일의 원고를 티스토리용 검색 최적화 HTML로 변환합니다. 사용자가 기존 블로그 글을 주고 티스토리에 맞게 바꿔달라고 할 때 사용하세요.
+---
+# Naver to Tistory Converter
+
+## Summary
+시간 흐름이나 일상적인 어투로 작성된 네이버 블로그 형태의 글을, 검색자 중심의 정보 제공을 목적으로 하는 티스토리(Tistory) 전용 HTML 포맷으로 변환합니다.
+
+## When to Use
+- 사용자가 "이 블로그 글을 티스토리용으로 바꿔줘", "네이버 블로그 원고를 티스토리 HTML로 변환해줘"라고 요청할 때
+- 감성적이고 일상적인 글을 정보 중심의 구조적인 HTML 글로 재구성해야 할 때
+
+## Conversion Rules
+1. **구조 재배치 (정보 중심)**: 방문한 순서(시간 흐름)가 아니라, 검색자가 가장 궁금해할 결론과 핵심 정보를 글의 최상단에 먼저 배치합니다.
+2. **불필요한 내용 제거**: 개인적인 인사말, 날씨 이야기, 의미 없는 감탄사, 과도한 이모티콘 등은 과감히 삭제합니다.
+3. **HTML 포맷팅**: 결과물은 반드시 하나의 HTML 코드 블록으로 출력합니다.
+   - 제목 태그: &lt;h2&gt; (대분류), &lt;h3&gt; (중분류) 사용 (&lt;h1&gt;은 사용 금지)
+   - 본문: &lt;p&gt; 태그 사용 (가독성을 위해 3~4문장 단위로 단락 구분)
+   - 목록: &lt;ul&gt;, &lt;ol&gt;, &lt;li&gt; 태그를 적극 활용하여 가독성 개선
+   - 표: &lt;table&gt; 태그 활용 (모바일 환경을 고려해 3열 이내로 구성)
+   - 강조: 중요한 키워드는 &lt;strong&gt; 사용
+4. **이미지 자리 표시**: 원본 글의 사진이나 이미지가 들어갈 자리는 아래 태그로 명확히 표시합니다.
+   - &lt;p style="background:#f3f3f3;padding:12px;text-align:center;"&gt;[사진: 원본 내용에 맞는 사진 설명]&lt;/p&gt;
+5. **어투와 포맷**: 신뢰감을 주는 정중한 문체를 사용하며, 모든 텍스트는 좌측 정렬을 기본으로 합니다 (가운데 정렬 금지). 전체 분량은 1000자~1500자 내외로 조절합니다.
+
+## Steps
+1. **원본 분석**: 제공된 원고에서 핵심 키워드, 주요 정보(위치, 가격, 장단점 등)를 추출합니다.
+2. **재구성**: 서론(결론 요약) - 본론(상세 정보 및 표/목록) - 결론(추천 대상 및 요약) 순으로 뼈대를 잡습니다.
+3. **변환**: 설정된 HTML 규칙에 맞추어 원고를 작성합니다.
+4. **출력**:
+   - 제목 후보 3개 (검색 최적화)
+   - HTML 본문 (코드 블록)
+   - 검색 설명문 (meta description 용도, 120자 이내)
+   - 태그 10개</pre><div class="bar"><button class="copy" type="button">복사</button></div></div>
+        <p class="tip"><b>2주 과제 연결:</b> "6개 중 2개는 네이버 글을 티스토리식으로 다시 쓰기"에 이 스킬을 씁니다.</p>
+      </article>
+
     </div>
   </section>
 
